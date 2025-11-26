@@ -96,7 +96,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 if st.button("Ejecutar proceso", type="primary", use_container_width=True):
     with st.spinner("Procesando solicitud..."):
         try:
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            model = genai.GenerativeModel('gemini-pro') 
             
             # --- PROMPT REFORZADO ---
             prompt = f"""
@@ -129,4 +129,5 @@ if st.button("Ejecutar proceso", type="primary", use_container_width=True):
             st.code(response.text, language=None)
             
         except Exception as e:
+
             st.error(f"Error de ejecución: {e}")
