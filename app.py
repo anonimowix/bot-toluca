@@ -90,7 +90,7 @@ if st.button("Ejecutar proceso", type="primary", use_container_width=True):
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
-                model="llama3-8b-8192", # Modelo muy rápido y eficiente
+               model="llama-3.1-8b-instant", # Modelo muy rápido y eficiente
             )
             
             st.markdown("### Resultados del proceso")
@@ -98,3 +98,4 @@ if st.button("Ejecutar proceso", type="primary", use_container_width=True):
             
         except Exception as e:
             st.error(f"Error de ejecución: {e}")
+
