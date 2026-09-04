@@ -1,10 +1,10 @@
 import hmac
 
 import streamlit as st
-from google import genai
+from groq import Groq
 
 
-MODEL_NAME = "gemini-3.5-flash-lite"
+MODEL_NAME = "llama-3.3-70b-versatile"
 
 st.set_page_config(
     page_title="Comunicación Pública Toluca",
@@ -43,7 +43,7 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # Las credenciales se configuran en los Secrets de Streamlit Cloud.
 try:
     clave_secreta = str(st.secrets["APP_PASSWORD"])
-    api_key = str(st.secrets["GEMINI_API_KEY"])
+    api_key = str(st.secrets["GROQ_API_KEY"])
 except KeyError as error:
     st.error(
         f"Falta configurar el secreto '{error.args[0]}' en Streamlit Cloud."
@@ -60,7 +60,7 @@ if not hmac.compare_digest(password_usuario, clave_secreta):
     st.info("Autenticación requerida para continuar.")
     st.stop()
 
-client = genai.Client(api_key=api_key)
+client = Groq(api_key=api_key)
 
 st.title("Panel de Comunicación Pública")
 st.success("Credenciales verificadas. Sistema listo.")
@@ -144,15 +144,16 @@ if st.button("Ejecutar proceso", type="primary", use_container_width=True):
             de línea.
             """
 
-            response = client.models.generate_content(
+            response = client.chat.completions.create(
                 model=MODEL_NAME,
-                contents=prompt,
+                messages=[{"role": "user", "content": prompt}],
             )
 
-            if not response.text:
-                raise RuntimeError("Gemini no devolvió texto en esta solicitud.")
+            resultado = response.choices[0].message.content
+            if not resultado:
+                raise RuntimeError("Groq no devolvió texto en esta solicitud.")
 
             st.markdown("### Resultados del proceso")
-            st.code(response.text, language=None)
+            st.code(resultado, language=None)
         except Exception as error:
             st.error(f"Error de ejecución: {error}")

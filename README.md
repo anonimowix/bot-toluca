@@ -1,6 +1,6 @@
 # Generador Toluca
 
-Aplicación de Streamlit para crear borradores de comunicación pública con la API de Gemini.
+Aplicación de Streamlit para crear borradores de comunicación pública con la API de Groq.
 
 ## Configuración en Streamlit Community Cloud
 
@@ -14,7 +14,7 @@ En **Settings > Secrets** de la aplicación agrega:
 
 ```toml
 APP_PASSWORD = "una-contrasena-nueva"
-GEMINI_API_KEY = "tu-clave-de-gemini"
+GROQ_API_KEY = "tu-clave-de-groq"
 ```
 
 Nunca subas las credenciales reales al repositorio. Al guardar cambios en la rama `main`, Streamlit Community Cloud vuelve a publicar la aplicación automáticamente.
