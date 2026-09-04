@@ -4,7 +4,7 @@ import streamlit as st
 from groq import Groq
 
 
-MODEL_NAME = "llama-3.3-70b-versatile"
+MODEL_NAME = "openai/gpt-oss-20b"
 
 st.set_page_config(
     page_title="Comunicación Pública Toluca",
