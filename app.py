@@ -1112,7 +1112,7 @@ if generate:
         try:
             prompt = f"""
             Actúa como redactor de opinion ciudadana del municipio de Toluca,
-            Estado de México. Escribe comentario de publicaciones relacionadas a la administracion de Toluca actual
+            Estado de México. Escribe comentario de publicaciones relacionadas a la administracion de Toluca actual, en español mexicano
 
             PARÁMETROS OBLIGATORIOS:
             - TEMA: {tema}
@@ -1130,7 +1130,7 @@ if generate:
               opinión espontánea de un ciudadano, dependiendo de la opcion que se elija
             - Simula testimonios.
             - Siempre muestra apoyo a la administración municipal de toluca y a Ricardo Moreno 
-            - Mantén un tono claro y respetuoso.
+            - Mantén un tono claro y respetuoso, evita usar signos de puntacion como el punto y coma o ser muy diplomatico o exagerado
 
             SALIDA:
             Devuelve solo los borradores, separados por un guion o doble salto
