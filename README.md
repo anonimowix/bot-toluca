@@ -15,9 +15,13 @@ En **Settings > Secrets** de la aplicación agrega:
 ```toml
 APP_PASSWORD = "una-contrasena-nueva"
 GROQ_API_KEY = "tu-clave-de-groq"
+TELEGRAM_BOT_TOKEN = "token-entregado-por-botfather"
+TELEGRAM_CHAT_ID = "id-numerico-del-administrador"
 ```
 
 Nunca subas las credenciales reales al repositorio. Al guardar cambios en la rama `main`, Streamlit Community Cloud vuelve a publicar la aplicación automáticamente.
+
+Si `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` están configurados, la aplicación sustituye la contraseña por solicitudes de acceso aprobadas o rechazadas mediante botones privados de Telegram. Mientras falte esa configuración, `APP_PASSWORD` funciona como respaldo temporal.
 
 ## Ejecución local
 
