@@ -1,6 +1,10 @@
+import hashlib
+import hmac
 import secrets
 import time
+from datetime import datetime, timedelta
 
+import extra_streamlit_components as stx
 import requests
 import streamlit as st
 from groq import Groq
@@ -9,9 +13,11 @@ from groq import Groq
 MODEL_NAME = "openai/gpt-oss-20b"
 APP_URL = "https://bot-toluca-g6nmujs67kbesdeoen5gcx.streamlit.app"
 ACCESS_TTL_SECONDS = 15 * 60
+COOKIE_TTL_SECONDS = 24 * 60 * 60
+ACCESS_COOKIE_NAME = "comuniquy_access_v1"
 
 st.set_page_config(
-    page_title="Comuniquy | Toluca",
+    page_title="Comuniquy",
     page_icon="●",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -321,6 +327,11 @@ h3 {
     transition: color .18s ease, background .18s ease, transform .18s ease;
 }
 
+.stButton > button p,
+.stFormSubmitButton > button p {
+    color: var(--paper) !important;
+}
+
 .stButton > button:hover,
 .stFormSubmitButton > button:hover {
     border-color: var(--ink);
@@ -330,10 +341,30 @@ h3 {
     box-shadow: 3px 3px 0 var(--ink);
 }
 
+.stButton > button:hover p,
+.stFormSubmitButton > button:hover p,
+.stButton > button:active p,
+.stFormSubmitButton > button:active p {
+    color: var(--ink) !important;
+}
+
+.stButton > button:active,
+.stFormSubmitButton > button:active {
+    border-color: var(--ink);
+    color: var(--ink);
+    background: var(--acid);
+}
+
 .stButton > button:focus:not(:active),
 .stFormSubmitButton > button:focus:not(:active) {
     border-color: var(--ink);
-    color: var(--ink);
+    color: var(--paper);
+    background: var(--ink);
+}
+
+.stButton > button:focus:not(:active) p,
+.stFormSubmitButton > button:focus:not(:active) p {
+    color: var(--paper) !important;
 }
 
 .stSlider [role="slider"] {
@@ -527,7 +558,7 @@ MOTION = """
 HERO = """
 <section class="kinetic-hero">
     <div class="brand-row">
-        <div class="brand-lockup"><span class="brand-dot"></span>Comuniquy / Toluca</div>
+        <div class="brand-lockup"><span class="brand-dot"></span>Comuniquy</div>
         <div class="edition-mark">Mensajes con intención</div>
     </div>
     <div class="hero-grid">
@@ -574,6 +605,38 @@ def secret_value(name, default=""):
         return str(st.secrets[name]).strip()
     except KeyError:
         return default
+
+
+def create_access_cookie(signing_secret):
+    expires_at = int(time.time()) + COOKIE_TTL_SECONDS
+    nonce = secrets.token_urlsafe(12)
+    payload = f"{expires_at}.{nonce}"
+    signature = hmac.new(
+        signing_secret.encode("utf-8"),
+        payload.encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
+    return f"{payload}.{signature}"
+
+
+def valid_access_cookie(cookie_value, signing_secret):
+    if not cookie_value or not signing_secret:
+        return False
+
+    try:
+        expires_at, nonce, supplied_signature = cookie_value.split(".", 2)
+        payload = f"{expires_at}.{nonce}"
+        expected_signature = hmac.new(
+            signing_secret.encode("utf-8"),
+            payload.encode("utf-8"),
+            hashlib.sha256,
+        ).hexdigest()
+        return (
+            int(expires_at) > int(time.time())
+            and hmac.compare_digest(supplied_signature, expected_signature)
+        )
+    except (AttributeError, TypeError, ValueError):
+        return False
 
 
 def telegram_call(token, method, payload=None):
@@ -638,6 +701,7 @@ def render_waiting_state(bot_token, chat_id):
 
     if decision is True:
         st.session_state.authorized = True
+        st.session_state.persist_access_cookie = True
         clear_access_request()
         st.rerun(scope="app")
 
@@ -722,8 +786,28 @@ def render_access_gate():
 
 
 st.markdown(STYLES, unsafe_allow_html=True)
-st.html(MOTION, unsafe_allow_javascript=True)
+
+cookie_manager = stx.CookieManager(key="comuniquy_cookie_manager")
+cookie_signing_secret = secret_value("TELEGRAM_BOT_TOKEN")
+stored_access_cookie = cookie_manager.get(ACCESS_COOKIE_NAME)
+
+if valid_access_cookie(stored_access_cookie, cookie_signing_secret):
+    st.session_state.authorized = True
+
+if st.session_state.pop("persist_access_cookie", False):
+    cookie_manager.set(
+        ACCESS_COOKIE_NAME,
+        create_access_cookie(cookie_signing_secret),
+        key="save_comuniquy_access",
+        path="/",
+        expires_at=datetime.now() + timedelta(days=1),
+        max_age=COOKIE_TTL_SECONDS,
+        secure=True,
+        same_site="strict",
+    )
+
 st.html(HERO)
+st.html(MOTION, unsafe_allow_javascript=True)
 
 if not st.session_state.get("authorized", False):
     render_access_gate()
