@@ -59,7 +59,7 @@ html, body, [class*="css"] {
     background-size: 8.333vw 100%;
 }
 
-#MainMenu, footer, header {
+#MainMenu, footer, [data-testid="stHeader"] {
     visibility: hidden;
 }
 
@@ -223,6 +223,65 @@ html, body, [class*="css"] {
     background: var(--signal);
 }
 
+.workspace-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 2rem;
+    margin-bottom: 1.2rem;
+    padding: 1rem 0 1.35rem;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+.workspace-brand {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    margin-bottom: 1.35rem;
+    font-family: 'DM Mono', monospace;
+    font-size: .7rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.workspace-header h1 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(2.5rem, 5.5vw, 5rem);
+    font-weight: 700;
+    line-height: .9;
+    letter-spacing: -.065em;
+}
+
+.workspace-header h1 span {
+    color: transparent;
+    -webkit-text-stroke: 1.3px var(--ink);
+}
+
+.workspace-status {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .65rem .8rem;
+    border: 1px solid var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-size: .68rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.workspace-status::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--acid);
+    box-shadow: 0 0 0 1px var(--ink);
+}
+
 .section-kicker {
     display: grid;
     grid-template-columns: 52px auto 1fr;
@@ -306,9 +365,46 @@ h3 {
 }
 
 [data-baseweb="popover"],
-[role="listbox"] {
+[role="listbox"],
+[data-baseweb="menu"] {
     color: var(--ink) !important;
     background: var(--sheet) !important;
+}
+
+[role="listbox"] {
+    border: 1px solid var(--ink) !important;
+}
+
+[role="option"],
+[role="option"] *,
+[data-baseweb="menu"] li,
+[data-baseweb="menu"] li * {
+    color: var(--ink) !important;
+}
+
+[role="option"],
+[data-baseweb="menu"] li {
+    background: var(--sheet) !important;
+}
+
+[role="option"]:hover,
+[role="option"][aria-selected="true"],
+[data-baseweb="menu"] li:hover,
+[data-baseweb="menu"] li[aria-selected="true"] {
+    color: var(--ink) !important;
+    background: var(--acid) !important;
+}
+
+[role="option"]:hover *,
+[role="option"][aria-selected="true"] *,
+[data-baseweb="menu"] li:hover *,
+[data-baseweb="menu"] li[aria-selected="true"] * {
+    color: var(--ink) !important;
+}
+
+[data-testid="stSegmentedControl"] button,
+[data-testid="stSegmentedControl"] button p {
+    color: var(--ink) !important;
 }
 
 .stButton > button,
@@ -498,6 +594,15 @@ h3 {
         grid-template-columns: 74px 1fr;
     }
 
+    .workspace-header {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .workspace-status {
+        justify-self: start;
+    }
+
     .wait-orbit {
         width: 64px;
         height: 64px;
@@ -524,25 +629,27 @@ MOTION = """
     const start = () => {
         if (!window.gsap || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-        const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-        tl.from('.brand-row', { scaleX: 0, transformOrigin: 'left', duration: .65 })
-          .from('.title-mask > span', { yPercent: 112, duration: .9, stagger: .09 }, '-=.2')
-          .from('.hero-side', { x: 30, opacity: 0, duration: .65 }, '-=.55')
-          .from('.ticker', { scaleX: 0, transformOrigin: 'left', duration: .55 }, '-=.35');
+        if (document.querySelector('.kinetic-hero')) {
+            const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+            tl.from('.brand-row', { scaleX: 0, transformOrigin: 'left', duration: .65 })
+              .from('.title-mask > span', { yPercent: 112, duration: .9, stagger: .09 }, '-=.2')
+              .from('.hero-side', { x: 30, opacity: 0, duration: .65 }, '-=.55')
+              .from('.ticker', { scaleX: 0, transformOrigin: 'left', duration: .55 }, '-=.35');
 
-        gsap.to('.orbit-mark', {
-            rotation: 360,
-            duration: 18,
-            repeat: -1,
-            ease: 'none'
-        });
+            gsap.to('.orbit-mark', {
+                rotation: 360,
+                duration: 18,
+                repeat: -1,
+                ease: 'none'
+            });
 
-        gsap.to('.ticker-track', {
-            xPercent: -50,
-            duration: 16,
-            repeat: -1,
-            ease: 'none'
-        });
+            gsap.to('.ticker-track', {
+                xPercent: -50,
+                duration: 16,
+                repeat: -1,
+                ease: 'none'
+            });
+        }
 
         const sectionLines = gsap.utils.toArray('.section-kicker');
         if (sectionLines.length) {
@@ -579,6 +686,16 @@ HERO = """
         </div>
     </div>
 </section>
+"""
+
+WORKSPACE_HEADER = """
+<header class="workspace-header">
+    <div>
+        <div class="workspace-brand"><span class="brand-dot"></span>Comuniquy / Toluca</div>
+        <h1>Crea un mensaje<span>.</span></h1>
+    </div>
+    <div class="workspace-status">Sesión activa</div>
+</header>
 """
 
 WAITING = """
@@ -806,11 +923,13 @@ if st.session_state.pop("persist_access_cookie", False):
         same_site="strict",
     )
 
-st.html(HERO)
-st.html(MOTION, unsafe_allow_javascript=True)
-
 if not st.session_state.get("authorized", False):
+    st.html(HERO)
+    st.html(MOTION, unsafe_allow_javascript=True)
     render_access_gate()
+
+st.html(WORKSPACE_HEADER)
+st.html(MOTION, unsafe_allow_javascript=True)
 
 api_key = secret_value("GROQ_API_KEY")
 if not api_key:
@@ -821,8 +940,8 @@ client = Groq(api_key=api_key)
 
 st.html('<div class="section-kicker" data-index="01">Configuración</div>')
 with st.container(border=True):
-    st.subheader("Dale dirección al mensaje")
-    st.caption("Elige los parámetros y crea nuevas propuestas.")
+    st.subheader("Configura la propuesta")
+    st.caption("Todo lo necesario está aquí. Ajusta y crea.")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -851,15 +970,30 @@ with st.container(border=True):
             ],
         )
 
-    longitud = st.select_slider(
-        "Longitud",
-        options=[
-            "Corta (1 frase)",
-            "Media (2 frases)",
-            "Larga (Párrafo)",
-        ],
-    )
-    cantidad = st.slider("Cantidad de opciones", 1, 5, 3)
+    col3, col4 = st.columns([1.35, 1])
+    with col3:
+        longitud_corta = st.segmented_control(
+            "Longitud",
+            options=["Corta", "Media", "Larga"],
+            default="Media",
+            required=True,
+            width="stretch",
+        )
+
+    with col4:
+        cantidad = st.segmented_control(
+            "Cantidad de opciones",
+            options=[1, 2, 3, 4, 5],
+            default=3,
+            required=True,
+            width="stretch",
+        )
+
+    longitud = {
+        "Corta": "Corta (1 frase)",
+        "Media": "Media (2 frases)",
+        "Larga": "Larga (Párrafo)",
+    }[longitud_corta]
 
     generate = st.button(
         "Crear propuestas",
