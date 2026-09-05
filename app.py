@@ -1,4 +1,3 @@
-import hmac
 import secrets
 import time
 
@@ -12,8 +11,8 @@ APP_URL = "https://bot-toluca-g6nmujs67kbesdeoen5gcx.streamlit.app"
 ACCESS_TTL_SECONDS = 15 * 60
 
 st.set_page_config(
-    page_title="Comunicación Pública Toluca",
-    page_icon="◆",
+    page_title="Comuniquy | Toluca",
+    page_icon="●",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -21,45 +20,37 @@ st.set_page_config(
 
 STYLES = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-    --navy-950: #06101f;
-    --navy-900: #0a1728;
-    --navy-800: #10233a;
-    --cyan-400: #47d7e8;
-    --blue-500: #4285ff;
-    --mint-400: #64e6b1;
-    --text-100: #f4f8ff;
-    --text-300: #adc0d8;
-    --line: rgba(150, 190, 226, 0.17);
-    --glass: rgba(11, 28, 48, 0.74);
+    --paper: #f2f0e8;
+    --sheet: #fbfaf5;
+    --ink: #11110f;
+    --muted: #68675f;
+    --line: #c9c6bb;
+    --acid: #c8ff45;
+    --signal: #ff4a31;
 }
 
 html, body, [class*="css"] {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
 }
 
 .stApp {
-    color: var(--text-100);
-    background:
-        radial-gradient(circle at 12% 12%, rgba(66, 133, 255, 0.17), transparent 31rem),
-        radial-gradient(circle at 88% 20%, rgba(71, 215, 232, 0.13), transparent 28rem),
-        linear-gradient(150deg, var(--navy-950) 0%, #081525 48%, #06111d 100%);
     min-height: 100vh;
+    color: var(--ink);
+    background: var(--paper);
 }
 
 .stApp::before {
     content: "";
     position: fixed;
     inset: 0;
+    z-index: 0;
     pointer-events: none;
-    opacity: 0.32;
-    background-image:
-        linear-gradient(rgba(128, 180, 220, 0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(128, 180, 220, 0.035) 1px, transparent 1px);
-    background-size: 42px 42px;
-    mask-image: linear-gradient(to bottom, black, transparent 82%);
+    opacity: .2;
+    background-image: linear-gradient(90deg, transparent calc(100% - 1px), #8e8b80 1px);
+    background-size: 8.333vw 100%;
 }
 
 #MainMenu, footer, header {
@@ -67,222 +58,427 @@ html, body, [class*="css"] {
 }
 
 [data-testid="stMainBlockContainer"] {
-    max-width: 1120px;
-    padding: 2.6rem 1.5rem 5rem;
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    padding: 1.2rem 1.6rem 5rem;
 }
 
-.gsap-hero {
+.kinetic-hero {
     position: relative;
     overflow: hidden;
-    padding: clamp(2rem, 5vw, 4.2rem);
-    margin-bottom: 1.25rem;
-    border: 1px solid var(--line);
-    border-radius: 30px;
-    background:
-        linear-gradient(135deg, rgba(17, 44, 72, 0.92), rgba(7, 22, 39, 0.82)),
-        var(--navy-900);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.34), inset 0 1px rgba(255, 255, 255, 0.05);
+    margin-bottom: 2.8rem;
+    color: var(--ink);
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
 }
 
-.hero-orb {
-    position: absolute;
-    border-radius: 999px;
-    filter: blur(2px);
-    pointer-events: none;
-}
-
-.orb-one {
-    width: 250px;
-    height: 250px;
-    top: -120px;
-    right: 6%;
-    background: radial-gradient(circle, rgba(71, 215, 232, 0.36), transparent 68%);
-}
-
-.orb-two {
-    width: 310px;
-    height: 310px;
-    right: -130px;
-    bottom: -180px;
-    background: radial-gradient(circle, rgba(66, 133, 255, 0.32), transparent 70%);
-}
-
-.eyebrow {
-    display: inline-flex;
+.brand-row {
+    display: flex;
     align-items: center;
-    gap: .55rem;
-    padding: .52rem .8rem;
-    margin-bottom: 1.35rem;
-    border: 1px solid rgba(100, 230, 177, 0.24);
-    border-radius: 999px;
-    color: #a9f3d4;
-    background: rgba(100, 230, 177, 0.07);
-    font-size: .76rem;
-    font-weight: 700;
-    letter-spacing: .12em;
+    justify-content: space-between;
+    min-height: 64px;
+    border-bottom: 1px solid var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-size: .72rem;
+    font-weight: 500;
+    letter-spacing: .09em;
     text-transform: uppercase;
 }
 
-.eyebrow-dot {
-    width: 7px;
-    height: 7px;
+.brand-lockup,
+.edition-mark {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+}
+
+.brand-dot {
+    width: 11px;
+    height: 11px;
+    border: 1px solid var(--ink);
     border-radius: 50%;
-    background: var(--mint-400);
-    box-shadow: 0 0 14px var(--mint-400);
+    background: var(--acid);
 }
 
-.hero-title {
-    max-width: 780px;
+.hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 250px;
+    gap: 2.5rem;
+    padding: clamp(2rem, 5vw, 4.6rem) 0 3rem;
+}
+
+.title-mask {
+    overflow: hidden;
+    padding-bottom: .08em;
+}
+
+.kinetic-title {
     margin: 0;
-    font-family: 'Manrope', sans-serif;
-    font-size: clamp(2.4rem, 6vw, 5.2rem);
-    font-weight: 800;
-    line-height: .98;
-    letter-spacing: -.055em;
-    color: var(--text-100);
+    color: var(--ink);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(3.35rem, 8.8vw, 7.8rem);
+    font-weight: 700;
+    line-height: .82;
+    letter-spacing: -.075em;
+    text-transform: uppercase;
 }
 
-.hero-title span {
+.kinetic-title .outline {
     color: transparent;
-    background: linear-gradient(90deg, var(--cyan-400), #85b6ff 58%, var(--mint-400));
-    background-clip: text;
-    -webkit-background-clip: text;
+    -webkit-text-stroke: 1.7px var(--ink);
+}
+
+.hero-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100%;
+    padding-top: .5rem;
+}
+
+.orbit-mark {
+    position: relative;
+    width: 152px;
+    height: 152px;
+    margin-left: auto;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+}
+
+.orbit-mark::before,
+.orbit-mark::after {
+    content: "";
+    position: absolute;
+    background: var(--ink);
+}
+
+.orbit-mark::before {
+    top: 50%;
+    left: -20px;
+    width: 190px;
+    height: 1px;
+}
+
+.orbit-mark::after {
+    top: -20px;
+    left: 50%;
+    width: 1px;
+    height: 190px;
+}
+
+.orbit-core {
+    position: absolute;
+    inset: 37px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--ink);
+    background: var(--acid);
+    font-size: 1.7rem;
 }
 
 .hero-copy {
-    max-width: 650px;
-    margin: 1.45rem 0 0;
-    color: var(--text-300);
-    font-size: clamp(1rem, 2vw, 1.14rem);
-    line-height: 1.72;
+    max-width: 230px;
+    margin: 2rem 0 0;
+    color: var(--muted);
+    font-size: .98rem;
+    line-height: 1.55;
 }
 
-.hero-meta {
+.ticker {
+    overflow: hidden;
+    border-top: 1px solid var(--ink);
+}
+
+.ticker-track {
     display: flex;
-    flex-wrap: wrap;
-    gap: .7rem;
-    margin-top: 1.8rem;
+    width: max-content;
+    padding: .8rem 0;
+    white-space: nowrap;
+    will-change: transform;
 }
 
-.meta-chip {
-    padding: .58rem .78rem;
-    border: 1px solid var(--line);
-    border-radius: 11px;
-    color: #c8d7ea;
-    background: rgba(255, 255, 255, 0.035);
-    font-size: .82rem;
-    font-weight: 600;
-}
-
-.section-label {
-    display: flex;
+.ticker-track span {
+    display: inline-flex;
     align-items: center;
-    gap: .65rem;
-    margin: 1.7rem 0 .8rem;
-    color: #c9d8ea;
-    font-size: .78rem;
-    font-weight: 700;
-    letter-spacing: .12em;
+    gap: 1.2rem;
+    padding-right: 1.2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: .72rem;
+    letter-spacing: .08em;
     text-transform: uppercase;
 }
 
-.section-label::before {
+.ticker-track i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--signal);
+}
+
+.section-kicker {
+    display: grid;
+    grid-template-columns: 52px auto 1fr;
+    align-items: center;
+    gap: .8rem;
+    margin: 2rem 0 .85rem;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-size: .72rem;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.section-kicker::before {
+    content: attr(data-index);
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+}
+
+.section-kicker::after {
     content: "";
-    width: 28px;
     height: 1px;
-    background: linear-gradient(90deg, var(--cyan-400), transparent);
+    background: var(--line);
+    transform-origin: left;
 }
 
 [data-testid="stVerticalBlockBorderWrapper"] {
-    border: 1px solid var(--line) !important;
-    border-radius: 22px !important;
-    background: var(--glass) !important;
-    box-shadow: 0 18px 54px rgba(0, 0, 0, 0.22), inset 0 1px rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(18px);
+    border: 1px solid var(--ink) !important;
+    border-radius: 0 !important;
+    background: rgba(251, 250, 245, .92) !important;
+    box-shadow: 9px 9px 0 var(--ink);
+}
+
+[data-testid="stVerticalBlockBorderWrapper"] > div {
+    padding: clamp(1.2rem, 3vw, 2rem) !important;
+}
+
+h1, h2, h3, h4, p, label,
+[data-testid="stMarkdownContainer"] {
+    color: var(--ink);
+}
+
+h3 {
+    font-size: clamp(1.55rem, 3vw, 2.25rem) !important;
+    letter-spacing: -.045em !important;
+}
+
+[data-testid="stCaptionContainer"] p {
+    color: var(--muted) !important;
 }
 
 [data-testid="stWidgetLabel"] p,
-[data-testid="stMarkdownContainer"] p,
-.stSlider label {
-    color: #d9e5f4 !important;
+.stSlider label p {
+    color: var(--ink) !important;
+    font-family: 'DM Mono', monospace !important;
+    font-size: .72rem !important;
+    font-weight: 500 !important;
+    letter-spacing: .04em !important;
+    text-transform: uppercase;
 }
 
 [data-baseweb="select"] > div,
 .stTextInput input {
-    min-height: 50px;
-    border-color: var(--line) !important;
-    border-radius: 13px !important;
-    color: var(--text-100) !important;
-    background: rgba(3, 13, 25, 0.56) !important;
+    min-height: 52px;
+    border: 1px solid var(--ink) !important;
+    border-radius: 0 !important;
+    color: var(--ink) !important;
+    background: var(--sheet) !important;
+    box-shadow: none !important;
 }
 
-.stTextInput input:focus {
-    border-color: rgba(71, 215, 232, .65) !important;
-    box-shadow: 0 0 0 3px rgba(71, 215, 232, .1) !important;
+.stTextInput input:focus,
+[data-baseweb="select"] > div:focus-within {
+    outline: 3px solid var(--acid) !important;
+    outline-offset: 0;
+}
+
+[data-baseweb="popover"],
+[role="listbox"] {
+    color: var(--ink) !important;
+    background: var(--sheet) !important;
 }
 
 .stButton > button,
 .stFormSubmitButton > button {
-    min-height: 50px;
-    border: 1px solid rgba(115, 220, 240, .24);
-    border-radius: 14px;
-    color: #04111d;
-    background: linear-gradient(100deg, var(--cyan-400), #79aaff 56%, var(--mint-400));
-    box-shadow: 0 12px 32px rgba(47, 151, 226, .2);
-    font-weight: 800;
-    transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+    min-height: 52px;
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    color: var(--paper);
+    background: var(--ink);
+    box-shadow: none;
+    font-family: 'DM Mono', monospace;
+    font-size: .78rem;
+    font-weight: 500;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    transition: color .18s ease, background .18s ease, transform .18s ease;
 }
 
 .stButton > button:hover,
 .stFormSubmitButton > button:hover {
-    border-color: rgba(255, 255, 255, .34);
-    color: #04111d;
-    filter: brightness(1.06);
-    transform: translateY(-2px);
-    box-shadow: 0 18px 38px rgba(47, 151, 226, .3);
+    border-color: var(--ink);
+    color: var(--ink);
+    background: var(--acid);
+    transform: translate(-3px, -3px);
+    box-shadow: 3px 3px 0 var(--ink);
 }
 
 .stButton > button:focus:not(:active),
 .stFormSubmitButton > button:focus:not(:active) {
-    color: #04111d;
-    border-color: rgba(255, 255, 255, .34);
+    border-color: var(--ink);
+    color: var(--ink);
+}
+
+.stSlider [role="slider"] {
+    border-color: var(--ink) !important;
+    background: var(--acid) !important;
 }
 
 [data-testid="stAlert"] {
-    border: 1px solid var(--line);
-    border-radius: 15px;
-    background: rgba(11, 28, 48, .8);
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    color: var(--ink);
+    background: var(--sheet);
 }
 
 [data-testid="stCode"] {
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    background: #071422;
-    box-shadow: 0 18px 45px rgba(0, 0, 0, .22);
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    color: var(--ink);
+    background: var(--sheet);
+    box-shadow: 7px 7px 0 var(--acid);
 }
 
-hr {
-    border-color: var(--line) !important;
+[data-testid="stCode"] code {
+    color: var(--ink) !important;
 }
 
-@media (max-width: 700px) {
+.waiting-shell {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    align-items: center;
+    gap: 1.6rem;
+    min-height: 150px;
+}
+
+.wait-orbit {
+    position: relative;
+    width: 94px;
+    height: 94px;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+}
+
+.wait-orbit::before {
+    content: "";
+    position: absolute;
+    inset: 16px;
+    border: 1px dashed var(--ink);
+    border-radius: 50%;
+}
+
+.wait-dot {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    width: 11px;
+    height: 11px;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    background: var(--acid);
+    transform: translateX(-50%);
+}
+
+.waiting-copy small {
+    font-family: 'DM Mono', monospace;
+    font-size: .68rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.waiting-copy h4 {
+    margin: .35rem 0 .5rem;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    letter-spacing: -.045em;
+}
+
+.waiting-copy p {
+    max-width: 470px;
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+}
+
+@media (max-width: 760px) {
     [data-testid="stMainBlockContainer"] {
-        padding: 1rem .8rem 3rem;
+        padding: .7rem .9rem 3.5rem;
     }
 
-    .gsap-hero {
-        padding: 1.7rem 1.35rem 2rem;
-        border-radius: 22px;
+    .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding-bottom: 2rem;
     }
 
-    .hero-title {
-        font-size: 2.45rem;
+    .kinetic-title {
+        font-size: clamp(3rem, 16vw, 5.3rem);
+    }
+
+    .hero-side {
+        display: grid;
+        grid-template-columns: 88px 1fr;
+        align-items: end;
+        gap: 1rem;
+    }
+
+    .orbit-mark {
+        width: 72px;
+        height: 72px;
+        margin: 0;
+    }
+
+    .orbit-mark::before {
+        left: -8px;
+        width: 88px;
+    }
+
+    .orbit-mark::after {
+        top: -8px;
+        height: 88px;
+    }
+
+    .orbit-core {
+        inset: 20px;
+        font-size: .8rem;
+    }
+
+    .hero-copy {
+        margin: 0;
+    }
+
+    .waiting-shell {
+        grid-template-columns: 74px 1fr;
+    }
+
+    .wait-orbit {
+        width: 64px;
+        height: 64px;
+    }
+
+    .wait-orbit::before {
+        inset: 11px;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
-        scroll-behavior: auto !important;
         animation-duration: .01ms !important;
         transition-duration: .01ms !important;
     }
@@ -294,63 +490,82 @@ MOTION = """
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 <script>
 (() => {
-    const runMotion = () => {
+    const start = () => {
         if (!window.gsap || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        gsap.from('.gsap-hero .reveal', {
-            y: 28,
-            opacity: 0,
-            duration: 0.85,
-            stagger: 0.11,
-            ease: 'power3.out'
-        });
-        gsap.to('.orb-one', {
-            x: 24,
-            y: -16,
-            duration: 5.2,
+
+        const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+        tl.from('.brand-row', { scaleX: 0, transformOrigin: 'left', duration: .65 })
+          .from('.title-mask > span', { yPercent: 112, duration: .9, stagger: .09 }, '-=.2')
+          .from('.hero-side', { x: 30, opacity: 0, duration: .65 }, '-=.55')
+          .from('.ticker', { scaleX: 0, transformOrigin: 'left', duration: .55 }, '-=.35');
+
+        gsap.to('.orbit-mark', {
+            rotation: 360,
+            duration: 18,
             repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut'
+            ease: 'none'
         });
-        gsap.to('.orb-two', {
-            x: -20,
-            y: 18,
-            duration: 6.4,
+
+        gsap.to('.ticker-track', {
+            xPercent: -50,
+            duration: 16,
             repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut'
+            ease: 'none'
         });
-        const cards = gsap.utils.toArray('[data-testid="stVerticalBlockBorderWrapper"]');
-        if (cards.length) {
-            gsap.from(cards, {
-                y: 18,
-                opacity: 0,
-                duration: 0.7,
-                delay: 0.22,
-                ease: 'power2.out'
-            });
+
+        const sectionLines = gsap.utils.toArray('.section-kicker');
+        if (sectionLines.length) {
+            gsap.from(sectionLines, { y: 12, opacity: 0, duration: .5, stagger: .08 });
         }
     };
-    window.setTimeout(runMotion, 120);
+
+    window.setTimeout(start, 100);
 })();
 </script>
 """
 
 HERO = """
-<section class="gsap-hero">
-    <div class="hero-orb orb-one"></div>
-    <div class="hero-orb orb-two"></div>
-    <div class="eyebrow reveal"><span class="eyebrow-dot"></span>Sistema operativo</div>
-    <h1 class="hero-title reveal">Comunicación pública,<br><span>clara y precisa.</span></h1>
-    <p class="hero-copy reveal">
-        Configura el enfoque, el tono y la extensión. El sistema prepara borradores
-        institucionales listos para revisar, ajustar y publicar.
-    </p>
-    <div class="hero-meta reveal">
-        <span class="meta-chip">◇ Toluca, Estado de México</span>
-        <span class="meta-chip">◇ Generación asistida</span>
-        <span class="meta-chip">◇ Acceso controlado</span>
+<section class="kinetic-hero">
+    <div class="brand-row">
+        <div class="brand-lockup"><span class="brand-dot"></span>Comuniquy / Toluca</div>
+        <div class="edition-mark">Mensajes con intención</div>
+    </div>
+    <div class="hero-grid">
+        <h1 class="kinetic-title">
+            <div class="title-mask"><span>Las palabras</span></div>
+            <div class="title-mask"><span class="outline">también</span></div>
+            <div class="title-mask"><span>construyen.</span></div>
+        </h1>
+        <aside class="hero-side">
+            <div class="orbit-mark"><span class="orbit-core">↗</span></div>
+            <p class="hero-copy">Define el enfoque y convierte una idea en propuestas claras, directas y listas para revisar.</p>
+        </aside>
+    </div>
+    <div class="ticker">
+        <div class="ticker-track">
+            <span>Claro <i></i> Directo <i></i> Humano <i></i> Preciso <i></i></span>
+            <span>Claro <i></i> Directo <i></i> Humano <i></i> Preciso <i></i></span>
+        </div>
     </div>
 </section>
+"""
+
+WAITING = """
+<div class="waiting-shell">
+    <div class="wait-orbit"><span class="wait-dot"></span></div>
+    <div class="waiting-copy">
+        <small>Solicitud enviada</small>
+        <h4>Esperando autorización</h4>
+        <p>No cierres esta ventana. El acceso se abrirá automáticamente cuando sea autorizado.</p>
+    </div>
+</div>
+<script>
+(() => {
+    if (!window.gsap || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    gsap.to('.wait-orbit', { rotation: 360, duration: 1.8, repeat: -1, ease: 'none' });
+    gsap.from('.waiting-copy > *', { y: 12, opacity: 0, duration: .5, stagger: .08, ease: 'power3.out' });
+})();
+</script>
 """
 
 
@@ -370,11 +585,11 @@ def telegram_call(token, method, payload=None):
     response.raise_for_status()
     data = response.json()
     if not data.get("ok"):
-        raise RuntimeError(data.get("description", "Telegram rechazó la solicitud."))
+        raise RuntimeError("No fue posible completar la solicitud.")
     return data.get("result")
 
 
-def check_telegram_decision(bot_token, chat_id, access_token):
+def check_access_decision(bot_token, chat_id, access_token):
     updates = telegram_call(
         bot_token,
         "getUpdates",
@@ -391,116 +606,119 @@ def check_telegram_decision(bot_token, chat_id, access_token):
         telegram_call(
             bot_token,
             "answerCallbackQuery",
-            {
-                "callback_query_id": callback.get("id"),
-                "text": "Decisión registrada",
-            },
+            {"callback_query_id": callback.get("id"), "text": "Decisión registrada"},
         )
         return decision.startswith("approve:")
     return None
+
+
+def clear_access_request():
+    st.session_state.pop("access_token", None)
+    st.session_state.pop("access_requested_at", None)
+
+
+@st.fragment(run_every="2s", key="access_waiter")
+def render_waiting_state(bot_token, chat_id):
+    requested_at = st.session_state.get("access_requested_at", 0)
+    if time.time() - requested_at > ACCESS_TTL_SECONDS:
+        clear_access_request()
+        st.session_state.access_notice = "expired"
+        st.rerun(scope="app")
+
+    st.html(WAITING, unsafe_allow_javascript=True)
+
+    try:
+        decision = check_access_decision(
+            bot_token,
+            chat_id,
+            st.session_state.access_token,
+        )
+    except (requests.RequestException, RuntimeError):
+        return
+
+    if decision is True:
+        st.session_state.authorized = True
+        clear_access_request()
+        st.rerun(scope="app")
+
+    if decision is False:
+        clear_access_request()
+        st.session_state.access_notice = "denied"
+        st.rerun(scope="app")
 
 
 def render_access_gate():
     bot_token = secret_value("TELEGRAM_BOT_TOKEN")
     chat_id = secret_value("TELEGRAM_CHAT_ID")
 
-    if bot_token and chat_id:
-        with st.container(border=True):
-            st.html('<div class="section-label">Acceso privado</div>')
-            st.subheader("Solicita autorización")
-            st.caption(
-                "Envía una solicitud al administrador. Cuando la apruebe desde "
-                "Telegram, podrás entrar desde esta misma sesión."
-            )
-
-            if "access_token" not in st.session_state:
-                requester = st.text_input(
-                    "Tu nombre o referencia",
-                    max_chars=60,
-                    placeholder="Ej. Coordinación de Comunicación",
-                )
-                st.caption(
-                    "Este dato se enviará al Telegram privado del administrador "
-                    "únicamente para identificar la solicitud."
-                )
-                if st.button(
-                    "Solicitar acceso",
-                    type="primary",
-                    use_container_width=True,
-                ):
-                    access_token = secrets.token_urlsafe(16)
-                    keyboard = {
-                        "inline_keyboard": [
-                            [
-                                {
-                                    "text": "✅ Aprobar",
-                                    "callback_data": f"approve:{access_token}",
-                                },
-                                {
-                                    "text": "❌ Denegar",
-                                    "callback_data": f"deny:{access_token}",
-                                },
-                            ]
-                        ]
-                    }
-                    telegram_call(
-                        bot_token,
-                        "sendMessage",
-                        {
-                            "chat_id": chat_id,
-                            "text": (
-                                "🔐 Nueva solicitud de acceso\n\n"
-                                f"Referencia: {requester.strip() or 'Sin nombre'}\n"
-                                f"Aplicación: {APP_URL}\n\n"
-                                "Aprueba o deniega esta sesión:"
-                            ),
-                            "reply_markup": keyboard,
-                        },
-                    )
-                    st.session_state.access_token = access_token
-                    st.session_state.access_requested_at = time.time()
-                    st.rerun()
-            else:
-                elapsed = time.time() - st.session_state.access_requested_at
-                if elapsed > ACCESS_TTL_SECONDS:
-                    st.warning("La solicitud expiró. Envía una nueva.")
-                    if st.button("Crear nueva solicitud", use_container_width=True):
-                        del st.session_state.access_token
-                        del st.session_state.access_requested_at
-                        st.rerun()
-                else:
-                    st.info("Solicitud enviada. Esperando la decisión del administrador.")
-                    if st.button(
-                        "Comprobar autorización",
-                        type="primary",
-                        use_container_width=True,
-                    ):
-                        decision = check_telegram_decision(
-                            bot_token,
-                            chat_id,
-                            st.session_state.access_token,
-                        )
-                        if decision is True:
-                            st.session_state.authorized = True
-                            st.rerun()
-                        if decision is False:
-                            st.error("La solicitud fue denegada.")
-                        if decision is None:
-                            st.toast("La solicitud sigue pendiente.")
-        st.stop()
-
-    # Respaldo temporal hasta completar la configuración de Telegram.
-    fallback_password = secret_value("APP_PASSWORD")
+    st.html('<div class="section-kicker" data-index="00">Acceso</div>')
     with st.container(border=True):
-        st.html('<div class="section-label">Acceso privado</div>')
-        st.subheader("Acceso temporal")
-        st.caption("La aprobación móvil está pendiente de configuración.")
-        entered_password = st.text_input("Contraseña", type="password")
-        if not (
-            fallback_password
-            and hmac.compare_digest(entered_password, fallback_password)
-        ):
+        if not bot_token or not chat_id:
+            st.subheader("Acceso no disponible")
+            st.caption("Intenta nuevamente dentro de unos minutos.")
             st.stop()
+
+        if "access_token" in st.session_state:
+            render_waiting_state(bot_token, chat_id)
+            st.stop()
+
+        notice = st.session_state.pop("access_notice", None)
+        if notice == "denied":
+            st.error("La solicitud no fue autorizada. Puedes enviar una nueva.")
+        if notice == "expired":
+            st.warning("La solicitud expiró. Envía una nueva para continuar.")
+
+        st.subheader("Solicita entrada")
+        st.caption(
+            "Identifícate y envía tu solicitud. Esta pantalla se actualizará "
+            "automáticamente cuando sea autorizada."
+        )
+        requester = st.text_input(
+            "Nombre o referencia",
+            max_chars=60,
+            placeholder="Ej. Coordinación de Comunicación",
+        )
+
+        if st.button("Solicitar acceso", type="primary", use_container_width=True):
+            access_token = secrets.token_urlsafe(16)
+            keyboard = {
+                "inline_keyboard": [
+                    [
+                        {
+                            "text": "✅ Aprobar",
+                            "callback_data": f"approve:{access_token}",
+                        },
+                        {
+                            "text": "❌ Denegar",
+                            "callback_data": f"deny:{access_token}",
+                        },
+                    ]
+                ]
+            }
+            try:
+                telegram_call(
+                    bot_token,
+                    "sendMessage",
+                    {
+                        "chat_id": chat_id,
+                        "text": (
+                            "🔐 Nueva solicitud de acceso\n\n"
+                            f"Referencia: {requester.strip() or 'Sin nombre'}\n"
+                            f"Aplicación: {APP_URL}\n\n"
+                            "Aprueba o deniega esta sesión:"
+                        ),
+                        "reply_markup": keyboard,
+                    },
+                )
+            except (requests.RequestException, RuntimeError):
+                st.error("No pudimos enviar la solicitud. Intenta nuevamente.")
+                st.stop()
+
+            st.session_state.access_token = access_token
+            st.session_state.access_requested_at = time.time()
+            st.rerun()
+
+    st.stop()
 
 
 st.markdown(STYLES, unsafe_allow_html=True)
@@ -512,15 +730,15 @@ if not st.session_state.get("authorized", False):
 
 api_key = secret_value("GROQ_API_KEY")
 if not api_key:
-    st.error("Falta configurar GROQ_API_KEY en los secretos de Streamlit.")
+    st.error("El servicio no está disponible en este momento.")
     st.stop()
 
 client = Groq(api_key=api_key)
 
-st.html('<div class="section-label">Configuración</div>')
+st.html('<div class="section-kicker" data-index="01">Configuración</div>')
 with st.container(border=True):
-    st.subheader("Define el mensaje")
-    st.caption("Selecciona los parámetros. La generación conserva las reglas actuales.")
+    st.subheader("Dale dirección al mensaje")
+    st.caption("Elige los parámetros y crea nuevas propuestas.")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -550,7 +768,7 @@ with st.container(border=True):
         )
 
     longitud = st.select_slider(
-        "Longitud de salida",
+        "Longitud",
         options=[
             "Corta (1 frase)",
             "Media (2 frases)",
@@ -560,13 +778,13 @@ with st.container(border=True):
     cantidad = st.slider("Cantidad de opciones", 1, 5, 3)
 
     generate = st.button(
-        "Generar borradores",
+        "Crear propuestas",
         type="primary",
         use_container_width=True,
     )
 
 if generate:
-    with st.spinner("Preparando borradores..."):
+    with st.spinner("Preparando propuestas..."):
         try:
             prompt = f"""
             Actúa como redactor de comunicación pública del municipio de Toluca,
@@ -603,11 +821,11 @@ if generate:
 
             resultado = response.choices[0].message.content
             if not resultado:
-                raise RuntimeError("Groq no devolvió texto en esta solicitud.")
+                raise RuntimeError("No se recibió contenido en esta solicitud.")
 
-            st.html('<div class="section-label">Resultado</div>')
+            st.html('<div class="section-kicker" data-index="02">Propuestas</div>')
             with st.container(border=True):
-                st.subheader("Borradores generados")
+                st.subheader("Listas para ajustar")
                 st.code(resultado, language=None)
-        except Exception as error:
-            st.error(f"Error de ejecución: {error}")
+        except Exception:
+            st.error("No pudimos crear las propuestas. Intenta nuevamente.")
