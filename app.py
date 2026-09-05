@@ -348,6 +348,7 @@ h3 {
     text-transform: uppercase;
 }
 
+.stSelectbox [data-baseweb="select"] > div,
 [data-baseweb="select"] > div,
 .stTextInput input {
     min-height: 52px;
@@ -356,6 +357,11 @@ h3 {
     color: var(--ink) !important;
     background: var(--sheet) !important;
     box-shadow: none !important;
+}
+
+.stSelectbox [data-baseweb="select"] *,
+[data-baseweb="select"] * {
+    color: var(--ink) !important;
 }
 
 .stTextInput input:focus,
@@ -402,6 +408,26 @@ h3 {
     color: var(--ink) !important;
 }
 
+[data-testid="stSegmentedControl"] [role="radiogroup"] {
+    border: 1px solid var(--ink) !important;
+    border-radius: 0 !important;
+    background: var(--sheet) !important;
+}
+
+[data-testid="stSegmentedControl"] button {
+    border-color: var(--line) !important;
+    border-radius: 0 !important;
+    color: var(--ink) !important;
+    background: var(--sheet) !important;
+    box-shadow: none !important;
+}
+
+[data-testid="stSegmentedControl"] button[aria-pressed="true"],
+[data-testid="stSegmentedControl"] button[data-active="true"] {
+    border-color: var(--signal) !important;
+    background: var(--acid) !important;
+}
+
 [data-testid="stSegmentedControl"] button,
 [data-testid="stSegmentedControl"] button p {
     color: var(--ink) !important;
@@ -412,8 +438,8 @@ h3 {
     min-height: 52px;
     border: 1px solid var(--ink);
     border-radius: 0;
-    color: var(--paper);
-    background: var(--ink);
+    color: var(--ink) !important;
+    background: var(--acid) !important;
     box-shadow: none;
     font-family: 'DM Mono', monospace;
     font-size: .78rem;
@@ -425,14 +451,14 @@ h3 {
 
 .stButton > button p,
 .stFormSubmitButton > button p {
-    color: var(--paper) !important;
+    color: var(--ink) !important;
 }
 
 .stButton > button:hover,
 .stFormSubmitButton > button:hover {
     border-color: var(--ink);
     color: var(--ink);
-    background: var(--acid);
+    background: var(--signal) !important;
     transform: translate(-3px, -3px);
     box-shadow: 3px 3px 0 var(--ink);
 }
@@ -448,19 +474,19 @@ h3 {
 .stFormSubmitButton > button:active {
     border-color: var(--ink);
     color: var(--ink);
-    background: var(--acid);
+    background: var(--signal) !important;
 }
 
 .stButton > button:focus:not(:active),
 .stFormSubmitButton > button:focus:not(:active) {
     border-color: var(--ink);
-    color: var(--paper);
-    background: var(--ink);
+    color: var(--ink) !important;
+    background: var(--acid) !important;
 }
 
 .stButton > button:focus:not(:active) p,
 .stFormSubmitButton > button:focus:not(:active) p {
-    color: var(--paper) !important;
+    color: var(--ink) !important;
 }
 
 .stSlider [role="slider"] {
@@ -476,15 +502,25 @@ h3 {
 }
 
 [data-testid="stCode"] {
-    border: 1px solid var(--ink);
-    border-radius: 0;
-    color: var(--ink);
-    background: var(--sheet);
+    border: 1px solid var(--ink) !important;
+    border-radius: 0 !important;
+    color: var(--ink) !important;
+    background: var(--sheet) !important;
     box-shadow: 7px 7px 0 var(--acid);
 }
 
-[data-testid="stCode"] code {
+[data-testid="stCode"] pre,
+[data-testid="stCode"] code,
+[data-testid="stCode"] span {
     color: var(--ink) !important;
+    background: transparent !important;
+}
+
+[data-testid="stCode"] pre,
+[data-testid="stCode"] code {
+    white-space: pre-wrap !important;
+    overflow-wrap: anywhere !important;
+    line-height: 1.6 !important;
 }
 
 .waiting-shell {
@@ -545,71 +581,141 @@ h3 {
 
 @media (max-width: 760px) {
     [data-testid="stMainBlockContainer"] {
-        padding: .7rem .9rem 3.5rem;
+        padding: .55rem .7rem 2.5rem;
+    }
+
+    .stApp::before {
+        background-size: 52px 100%;
+    }
+
+    .kinetic-hero {
+        margin-bottom: .8rem;
+    }
+
+    .brand-row {
+        min-height: 46px;
+        font-size: .6rem;
+        letter-spacing: .055em;
     }
 
     .hero-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        padding-bottom: 2rem;
+        display: block;
+        padding: 1.25rem 0 1.15rem;
     }
 
     .kinetic-title {
-        font-size: clamp(3rem, 16vw, 5.3rem);
+        font-size: clamp(2.8rem, 13.5vw, 3.45rem);
+        line-height: .84;
+        letter-spacing: -.07em;
     }
 
     .hero-side {
-        display: grid;
-        grid-template-columns: 88px 1fr;
-        align-items: end;
-        gap: 1rem;
+        display: none;
     }
 
-    .orbit-mark {
-        width: 72px;
-        height: 72px;
-        margin: 0;
+    .ticker {
+        display: none;
     }
 
-    .orbit-mark::before {
-        left: -8px;
-        width: 88px;
+    .section-kicker {
+        grid-template-columns: 40px auto 1fr;
+        gap: .55rem;
+        margin: .85rem 0 .5rem;
+        font-size: .64rem;
     }
 
-    .orbit-mark::after {
-        top: -8px;
-        height: 88px;
+    .section-kicker::before {
+        width: 29px;
+        height: 29px;
     }
 
-    .orbit-core {
-        inset: 20px;
-        font-size: .8rem;
+    [data-testid="stVerticalBlockBorderWrapper"] {
+        box-shadow: 4px 4px 0 var(--ink);
     }
 
-    .hero-copy {
-        margin: 0;
+    [data-testid="stVerticalBlockBorderWrapper"] > div {
+        padding: .95rem !important;
+    }
+
+    [data-testid="stVerticalBlock"] {
+        gap: .7rem !important;
+    }
+
+    [data-testid="stHorizontalBlock"] {
+        gap: .65rem !important;
+    }
+
+    h3 {
+        font-size: 1.5rem !important;
+    }
+
+    [data-baseweb="select"] > div,
+    .stTextInput input {
+        min-height: 46px;
+    }
+
+    .stButton > button,
+    .stFormSubmitButton > button {
+        min-height: 48px;
     }
 
     .waiting-shell {
-        grid-template-columns: 74px 1fr;
+        grid-template-columns: 58px 1fr;
+        gap: .9rem;
+        min-height: 108px;
     }
 
     .workspace-header {
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: .65rem;
+        margin-bottom: .45rem;
+        padding: .65rem 0 .8rem;
+    }
+
+    .workspace-brand {
+        margin-bottom: .65rem;
+        font-size: .6rem;
+    }
+
+    .workspace-header h1 {
+        font-size: clamp(2.3rem, 11vw, 3.1rem);
     }
 
     .workspace-status {
         justify-self: start;
+        padding: .48rem .62rem;
+        font-size: .6rem;
     }
 
     .wait-orbit {
-        width: 64px;
-        height: 64px;
+        width: 54px;
+        height: 54px;
     }
 
     .wait-orbit::before {
-        inset: 11px;
+        inset: 9px;
+    }
+
+    .waiting-copy h4 {
+        margin: .25rem 0 .35rem;
+        font-size: 1.25rem;
+    }
+
+    .waiting-copy p {
+        font-size: .83rem;
+        line-height: 1.4;
+    }
+}
+
+@media (max-width: 390px) {
+    .edition-mark {
+        max-width: 112px;
+        text-align: right;
+        line-height: 1.25;
+    }
+
+    .kinetic-title {
+        font-size: 12.9vw;
     }
 }
 
