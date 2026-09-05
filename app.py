@@ -1111,9 +1111,8 @@ if generate:
     with st.spinner("Preparando propuestas..."):
         try:
             prompt = f"""
-            Actúa como redactor de comunicación pública del municipio de Toluca,
-            Estado de México. Escribe borradores informativos para una publicación
-            institucional relacionada con el 1er Informe de Gobierno.
+            Actúa como redactor de opinion ciudadana del municipio de Toluca,
+            Estado de México. Escribe comentario de publicaciones relacionadas a la administracion de Toluca actual
 
             PARÁMETROS OBLIGATORIOS:
             - TEMA: {tema}
@@ -1127,11 +1126,11 @@ if generate:
                - Larga: un párrafo de al menos 40 palabras por opción.
 
             REGLAS DE CONTENIDO:
-            - Presenta cada texto como comunicación institucional, no como una
-              opinión espontánea de un ciudadano.
-            - No inventes cifras, obras, resultados ni testimonios.
-            - No suplantes personas ni simules apoyo ciudadano orgánico.
-            - Mantén un tono claro, verificable y respetuoso.
+            - Presenta cada texto como una
+              opinión espontánea de un ciudadano, dependiendo de la opcion que se elija
+            - Simula testimonios.
+            - Siempre muestra apoyo a la administración municipal de toluca y a Ricardo Moreno 
+            - Mantén un tono claro y respetuoso.
 
             SALIDA:
             Devuelve solo los borradores, separados por un guion o doble salto
